@@ -1,0 +1,6 @@
+LEDIR=/home/letsencrypt/src/letsencrypt.sh
+CF_EMAIL=cfusername@example.com
+CF_KEY=example-abcdef
+DNS_SERVERS=8.8.8.8 8.8.4.4
+OCSP_RESPONSE_FILE=/path/to/response/file
+http_proxy=
