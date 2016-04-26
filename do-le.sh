@@ -9,6 +9,7 @@ while getopts 'vf:' opt; do
   esac
 done
 
+VERBOSE="${VERBOSE:-0}"
 CONF_FILE="${CONF_FILE:-"$(dirname "$(perl -MCwd -le 'print Cwd::abs_path(shift)' "$0")")/do-le.conf"}"
 LOGFILE="${LOGFILE:-$(mktemp)}"
 
