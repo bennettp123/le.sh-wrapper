@@ -11,7 +11,14 @@ done
 
 CONF_FILE="${CONF_FILE:-"$(dirname "$(perl -MCwd -le 'print Cwd::abs_path(shift)' "$0")")/do-le.conf"}"
 LOGFILE="${LOGFILE:-$(mktemp)}"
-exec 3>&1 1>>"${LOGFILE}" 2>&1
+
+function cleanup {
+  rm -f "$LOGFILE"
+}
+trap cleanup EXIT
+
+# send output to logfile and syslog
+exec 3>&1 1> >(exec tee "$LOGFILE" >(exec logger -t "$(basename "$0")") >/dev/null) 2>&1
 
 ERR=0
 
@@ -38,8 +45,7 @@ ERR=$((ERR+$?))
 "${LEDIR}/letsencrypt.sh" --cleanup
 ERR=$((ERR+$?))
 
-if [ $ERR -gt 0 ] || [ $VERBOSE -gt 0 ]; then
-  cat "${LOGFILE}" >&3
-fi
+# if there was an error, or if VERBOSE, print logfile to stdout. Otherwise, be quiet
+if [ $ERR -gt 0 ] || [ $VERBOSE -gt 0 ]; then cat "${LOGFILE}" >&3 2>&1; fi
 
-rm -f "${LOGFILE}"
+exit ${ERR}
