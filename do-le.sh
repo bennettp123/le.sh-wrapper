@@ -1,16 +1,27 @@
 #!/bin/bash
 
+LEDIR_ARG=''
 while getopts 'vf:' opt; do
   case "$opt" in
   v) VERBOSE=1
      ;;
   f) CONF_FILE="$OPTARG"
      ;;
+  d) LEDIR_ARG="$OPTARG"
   esac
 done
 
 VERBOSE="${VERBOSE:-0}"
 CONF_FILE="${CONF_FILE:-"$(dirname "$(perl -MCwd -le 'print Cwd::abs_path(shift)' "$0")")/do-le.conf"}"
+
+if [ ! -r "$CONF_FILE" ]; then
+ echo "Error reading config file $CONF_FILE" >&2
+ echo "  (Hint: specify config file using: -f <conf_file>)" >&2
+ exit 1
+fi
+[ -r "$CONF_FILE" ] && . "$CONF_FILE"
+[ -z "$LEDIR_ARG" ] && LEDIR="$LEDIR_ARG"
+
 LOGFILE="${LOGFILE:-$(mktemp)}"
 
 function cleanup {
@@ -21,14 +32,12 @@ trap cleanup EXIT
 # send output to logfile and syslog
 exec 3>&1 1> >(exec tee "$LOGFILE" >(exec logger -t "$(basename "$0")") >/dev/null) 2>&1
 
+LEDIR="${LEDIR:-/opt/letsencrypt}"
+if [ ! -x "$LEDIR" ]; then
+  echo "Let's Encrypt basedir not found: $LEDIR" >&2
+  echo "  (Hint: specify using -d <ledir> or LEDIR)" >&2
+  exit 1
 ERR=0
-
-CF_DNS_SERVERS="${CF_DNS_SERVERS:-"$(grep CF_DNS_SERVERS "${CONF_FILE}" | sed 's/^.*CF_DNS_SERVERS=//')"}"
-CF_EMAIL="${CF_EMAIL:-"$(grep CF_EMAIL "${CONF_FILE}" | sed 's/^.*CF_EMAIL=//')"}"
-CF_KEY="${CF_KEY:-"$(grep CF_KEY "${CONF_FILE}" | sed 's/^.*CF_KEY=//')"}"
-LEDIR="${LEDIR:-"$(grep LEDIR "${CONF_FILE}" | sed 's/^.*LEDIR=//')"}"
-OCSP_RESPONSE_FILE="${OCSP_RESPONSE_FILE:-"$(grep OCSP_RESPONSE_FILE "${CONF_FILE}" | sed 's/^.*OCSP_RESPONSE_FILE=//')"}"
-http_proxy="${http_proxy:-"$(grep http_proxy "${CONF_FILE}" | sed 's/^.*http_proxy=//')"}"
 
 CF_DNS_SERVERS="$CF_DNS_SERVERS" \
   CF_EMAIL="$CF_EMAIL" \
