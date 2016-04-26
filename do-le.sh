@@ -4,12 +4,14 @@ function usage {
   echo "Usage: $(basename $0) -f <config_file> [-d <letsencypt_dir>]" 
 }
 
+CONF_FILE_ARG=''
 LEDIR_ARG=''
+VERBOSE_ARG=''
 while getopts 'vf:d:' opt; do
   case "$opt" in
-  v) VERBOSE=1
+  v) VERBOSE_ARG=1
      ;;
-  f) CONF_FILE="$OPTARG"
+  f) CONF_FILE_ARG="$OPTARG"
      ;;
   d) LEDIR_ARG="$OPTARG"
      ;;
@@ -19,8 +21,8 @@ while getopts 'vf:d:' opt; do
   esac
 done
 
-VERBOSE="${VERBOSE:-0}"
-CONF_FILE="${CONF_FILE:-"$(dirname "$(perl -MCwd -le 'print Cwd::abs_path(shift)' "$0")")/do-le.conf"}"
+VERBOSE="${VERBOSE_ARG:-${VERBOSE:-0}}"
+CONF_FILE="${CONF_FILE_ARG:-${CONF_FILE:-"$(dirname "$(perl -MCwd -le 'print Cwd::abs_path(shift)' "$0")")/do-le.conf"}}"
 
 if [ ! -r "$CONF_FILE" ]; then
  echo "Error reading config file $CONF_FILE" >&2
@@ -28,8 +30,8 @@ if [ ! -r "$CONF_FILE" ]; then
  usage >&2
  exit 1
 fi
+
 [ -r "$CONF_FILE" ] && . "$CONF_FILE"
-[ -x "$LEDIR_ARG" ] && LEDIR="$LEDIR_ARG"
 
 LOGFILE="${LOGFILE:-$(mktemp)}"
 
@@ -45,7 +47,7 @@ trap cleanup EXIT
 # send output to logfile and syslog
 exec 3>&1 1> >(exec tee "$LOGFILE" >(exec logger -t "$(basename "$0")") >/dev/null) 2>&1
 
-LEDIR="${LEDIR:-/opt/letsencrypt}"
+LEDIR="${LEDIR_ARG:-${LEDIR:-/opt/letsencrypt}}"
 if [ ! -x "$LEDIR" ]; then
   echo "Let's Encrypt basedir not found: $LEDIR" >&2
   echo "  (Hint: specify using -d <ledir> or LEDIR)" >&2
