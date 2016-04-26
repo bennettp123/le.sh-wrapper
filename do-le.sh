@@ -29,7 +29,7 @@ if [ ! -r "$CONF_FILE" ]; then
  exit 1
 fi
 [ -r "$CONF_FILE" ] && . "$CONF_FILE"
-[ -z "$LEDIR_ARG" ] && LEDIR="$LEDIR_ARG"
+[ -x "$LEDIR_ARG" ] && LEDIR="$LEDIR_ARG"
 
 LOGFILE="${LOGFILE:-$(mktemp)}"
 
