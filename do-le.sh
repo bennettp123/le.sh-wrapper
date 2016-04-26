@@ -1,5 +1,9 @@
 #!/bin/bash
 
+function usage {
+  echo "Usage: $(basename $0) -f <config_file> [-d <letsencypt_dir>]" 
+}
+
 LEDIR_ARG=''
 while getopts 'vf:d:' opt; do
   case "$opt" in
@@ -8,6 +12,10 @@ while getopts 'vf:d:' opt; do
   f) CONF_FILE="$OPTARG"
      ;;
   d) LEDIR_ARG="$OPTARG"
+     ;;
+  *) usage >&2
+     exit 1
+     ;;
   esac
 done
 
@@ -17,6 +25,7 @@ CONF_FILE="${CONF_FILE:-"$(dirname "$(perl -MCwd -le 'print Cwd::abs_path(shift)
 if [ ! -r "$CONF_FILE" ]; then
  echo "Error reading config file $CONF_FILE" >&2
  echo "  (Hint: specify config file using: -f <conf_file>)" >&2
+ usage >&2
  exit 1
 fi
 [ -r "$CONF_FILE" ] && . "$CONF_FILE"
@@ -36,6 +45,7 @@ LEDIR="${LEDIR:-/opt/letsencrypt}"
 if [ ! -x "$LEDIR" ]; then
   echo "Let's Encrypt basedir not found: $LEDIR" >&2
   echo "  (Hint: specify using -d <ledir> or LEDIR)" >&2
+  usage >&2
   exit 1
 ERR=0
 
