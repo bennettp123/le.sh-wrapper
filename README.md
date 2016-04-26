@@ -1,5 +1,5 @@
 # letsencrypt.sh-wrapper
-A wrapper script for letsencrypt.sh. launched letsencrypt.sh, and only prints output if an error occurs. Useful for cron, to prevent it from pestering you unless an error occurred.
+A wrapper script for letsencrypt.sh. Launches letsencrypt.sh, and only prints output if an error occurs. Useful for cron, to prevent it from pestering you unless an error occurred.
 
 Usage:
 
