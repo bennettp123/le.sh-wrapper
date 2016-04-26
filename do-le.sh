@@ -47,6 +47,8 @@ if [ ! -x "$LEDIR" ]; then
   echo "  (Hint: specify using -d <ledir> or LEDIR)" >&2
   usage >&2
   exit 1
+fi
+
 ERR=0
 
 CF_DNS_SERVERS="$CF_DNS_SERVERS" \
