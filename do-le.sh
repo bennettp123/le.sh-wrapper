@@ -33,7 +33,11 @@ fi
 
 LOGFILE="${LOGFILE:-$(mktemp)}"
 
+ERR=0
+
 function cleanup {
+  # if there was an error, or if VERBOSE, print logfile to stdout. Otherwise, be quiet.
+  if [ $ERR -gt 0 ] || [ $VERBOSE -gt 0 ]; then cat "${LOGFILE}" >&3 2>&1; fi
   rm -f "$LOGFILE"
 }
 trap cleanup EXIT
@@ -48,8 +52,6 @@ if [ ! -x "$LEDIR" ]; then
   usage >&2
   exit 1
 fi
-
-ERR=0
 
 CF_DNS_SERVERS="$CF_DNS_SERVERS" \
   CF_EMAIL="$CF_EMAIL" \
@@ -66,8 +68,5 @@ ERR=$((ERR+$?))
 
 "${LEDIR}/letsencrypt.sh" --cleanup
 ERR=$((ERR+$?))
-
-# if there was an error, or if VERBOSE, print logfile to stdout. Otherwise, be quiet
-if [ $ERR -gt 0 ] || [ $VERBOSE -gt 0 ]; then cat "${LOGFILE}" >&3 2>&1; fi
 
 exit ${ERR}
