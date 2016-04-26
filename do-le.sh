@@ -1,7 +1,7 @@
 #!/bin/bash
 
 LEDIR_ARG=''
-while getopts 'vf:' opt; do
+while getopts 'vf:d:' opt; do
   case "$opt" in
   v) VERBOSE=1
      ;;
