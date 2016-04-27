@@ -4,6 +4,8 @@ function usage {
   echo "Usage: $(basename $0) -f <config_file> [-d <letsencypt_dir>]" 
 }
 
+ERR=0
+
 CONF_FILE_ARG=''
 LEDIR_ARG=''
 VERBOSE_ARG=''
@@ -25,6 +27,7 @@ VERBOSE="${VERBOSE_ARG:-${VERBOSE:-0}}"
 CONF_FILE="${CONF_FILE_ARG:-${CONF_FILE:-"$(dirname "$(perl -MCwd -le 'print Cwd::abs_path(shift)' "$0")")/do-le.conf"}}"
 
 if [ ! -r "$CONF_FILE" ]; then
+ ERR=1
  echo "Error reading config file $CONF_FILE" >&2
  echo "  (Hint: specify config file using: -f <conf_file>)" >&2
  usage >&2
@@ -34,8 +37,6 @@ fi
 [ -r "$CONF_FILE" ] && . "$CONF_FILE"
 
 LOGFILE="${LOGFILE:-$(mktemp)}"
-
-ERR=0
 
 function cleanup {
   # if there was an error, or if VERBOSE, print logfile to stdout. Otherwise, be quiet.
@@ -49,6 +50,7 @@ exec 3>&1 1> >(exec tee "$LOGFILE" >(exec logger -t "$(basename "$0")") >/dev/nu
 
 LEDIR="${LEDIR_ARG:-${LEDIR:-/opt/letsencrypt}}"
 if [ ! -x "$LEDIR" ]; then
+  ERR=1
   echo "Let's Encrypt basedir not found: $LEDIR" >&2
   echo "  (Hint: specify using -d <ledir> or LEDIR)" >&2
   usage >&2
