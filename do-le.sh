@@ -36,6 +36,15 @@ fi
 
 [ -r "$CONF_FILE" ] && . "$CONF_FILE"
 
+LEDIR="${LEDIR_ARG:-${LEDIR:-/opt/letsencrypt}}"
+if [ ! -x "$LEDIR" ]; then
+  ERR=1
+  echo "Error: Let's Encrypt basedir not found: $LEDIR" >&2
+  echo "  (Hint: specify using -d <ledir> or LEDIR)" >&2
+  usage >&2
+  exit 1
+fi
+
 LOGFILE="${LOGFILE:-$(mktemp)}"
 
 function cleanup {
@@ -47,15 +56,6 @@ trap cleanup EXIT
 
 # send output to logfile and syslog
 exec 3>&1 1> >(exec tee "$LOGFILE" >(exec logger -t "$(basename "$0")") >/dev/null) 2>&1
-
-LEDIR="${LEDIR_ARG:-${LEDIR:-/opt/letsencrypt}}"
-if [ ! -x "$LEDIR" ]; then
-  ERR=1
-  echo "Let's Encrypt basedir not found: $LEDIR" >&2
-  echo "  (Hint: specify using -d <ledir> or LEDIR)" >&2
-  usage >&2
-  exit 1
-fi
 
 CF_DNS_SERVERS="$CF_DNS_SERVERS" \
   CF_EMAIL="$CF_EMAIL" \
