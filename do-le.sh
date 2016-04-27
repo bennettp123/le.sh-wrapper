@@ -49,13 +49,17 @@ LOGFILE="${LOGFILE:-$(mktemp)}"
 
 function cleanup {
   # if there was an error, or if VERBOSE, print logfile to stdout. Otherwise, be quiet.
-  if [ $ERR -gt 0 ] || [ $VERBOSE -gt 0 ]; then cat "${LOGFILE}" >&3 2>&1; fi
+  if [ $ERR -gt 0 ] && [ $VERBOSE -eq 0 ]; then cat "${LOGFILE}" >&3 2>&1; fi
   rm -f "$LOGFILE"
 }
 trap cleanup EXIT
 
 # send output to logfile and syslog
-exec 3>&1 1> >(exec tee "$LOGFILE" >(exec logger -t "$(basename "$0")") >/dev/null) 2>&1
+if [ $VERBOSE -gt 0 ]; then
+  exec 3>&1 1> >(exec tee "$LOGFILE" >(exec logger -t "$(basename "$0")")) 2>&1
+else 
+  exec 3>&1 1> >(exec tee "$LOGFILE" >(exec logger -t "$(basename "$0")") >/dev/null) 2>&1
+fi
 
 CF_DNS_SERVERS="$CF_DNS_SERVERS" \
   CF_EMAIL="$CF_EMAIL" \
