@@ -36,7 +36,7 @@ fi
 
 [ -r "$CONF_FILE" ] && . "$CONF_FILE"
 
-LEDIR="${LEDIR_ARG:-${LEDIR:-/opt/letsencrypt}}"
+LEDIR="${LEDIR_ARG:-${LEDIR:-/opt/letsencrypt.sh}}"
 if [ ! -x "$LEDIR" ]; then
   ERR=1
   echo "Error: Let's Encrypt basedir not found: $LEDIR" >&2

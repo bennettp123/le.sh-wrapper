@@ -1,6 +1,29 @@
-LEDIR=/home/letsencrypt/src/letsencrypt.sh
-CF_EMAIL=cfusername@example.com
-CF_KEY=example-abcdef
-DNS_SERVERS=8.8.8.8 8.8.4.4
-OCSP_RESPONSE_FILE=/path/to/response/file
-http_proxy=
+# The path to letsencrypt.sh base dir
+#
+#LEDIR=/opt/letsencrypt.sh
+
+# Cloudflare username and API key.
+# Used by [letsencrypt-cloudflare-hook](https://github.com/kappataumu/letsencrypt-cloudflare-hook)
+# Default: none
+# 
+# CF_EMAIL=cfusername@example.com
+#CF_KEY=example-abcdef
+
+# DNS servers. Optional.
+# Used by [letsencrypt-cloudflare-hook](https://github.com/kappataumu/letsencrypt-cloudflare-hook)
+# Default: none
+#
+#DNS_SERVERS='8.8.8.8 8.8.4.4'
+
+# OSCP response file. Optional.
+# Used by [letsencrypt.sh-email-notify-hook](https://github.com/bennettp123/letsencrypt.sh-email-notify-hook)
+# Default: none
+# 
+#OCSP_RESPONSE_FILE=/path/to/response/file
+
+# http and https proxies. Optional. 
+# Default: none
+#
+#http_proxy=
+#https_proxy=
+
