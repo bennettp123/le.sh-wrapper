@@ -66,6 +66,7 @@ CF_DNS_SERVERS="$CF_DNS_SERVERS" \
   CF_KEY="$CF_KEY" \
   OCSP_RESPONSE_FILE="$OCSP_RESPONSE_FILE" \
   http_proxy="$http_proxy" \
+  https_proxy="$https_proxy" \
   "${LEDIR}/letsencrypt.sh" --cron
 ERR=$((ERR+$?))
 
